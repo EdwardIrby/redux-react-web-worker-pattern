@@ -25,6 +25,6 @@ store.subscribe(() =>  {
   self.postMessage({address: 'UPDATE_COUNTER_VALUE', props: store.getState()})
 })
 
-self.addEventListener('message', ({ data }) => {
-  store.dispatch(data);
+self.addEventListener('message', ({ data: action }) => {
+  store.dispatch(action);
 }, false);
