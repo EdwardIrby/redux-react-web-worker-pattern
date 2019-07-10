@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
-
-const reduxWorker = new Worker('./redux.worker.js', { type: 'module' })
-
-const increment = () => {
-  reduxWorker.postMessage({ type: 'INCREMENT' })
+import { dispatch, connect } from './state';
+const increment = () => { 
+  dispatch({ type: 'INCREMENT' })
 }
 const decrement = () => {
-  reduxWorker.postMessage({ type: 'DECREMENT' })
+  dispatch({ type: 'DECREMENT' })
 }
 export const App = () => {
   const [value, setValue] = useState();
   useEffect(() => {
-    reduxWorker.onmessage = e=> {
-      const newValue = e.data;
-      setValue(newValue)
+    const disconnect = connect('UPDATE_COUNTER_VALUE', setValue)
+    return () => {
+      disconnect()
     }
   })
   return(

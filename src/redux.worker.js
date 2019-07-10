@@ -1,4 +1,5 @@
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
+import { composeWithDevTools } from 'remote-redux-devtools'
 
 function counter(state = 0, action) {
   switch (action.type) {
@@ -10,12 +11,20 @@ function counter(state = 0, action) {
       return state
   }
 }
+const composeEnhancers = composeWithDevTools({
+  realtime: true,
+  port: 8000,
+})
 
-let store = createStore(counter)
+const store = createStore(
+  counter,
+  composeEnhancers()
+)
+self.postMessage({address: 'UPDATE_COUNTER_VALUE', props: store.getState()})
+store.subscribe(() =>  {
+  self.postMessage({address: 'UPDATE_COUNTER_VALUE', props: store.getState()})
+})
 
-store.subscribe(() =>  self.postMessage(store.getState()))
-
-self.addEventListener('message', function(e) {
-  const action = e.data;
-  store.dispatch(action);
+self.addEventListener('message', ({ data }) => {
+  store.dispatch(data);
 }, false);
