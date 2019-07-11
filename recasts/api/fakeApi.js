@@ -10,7 +10,7 @@ const login = () => new Promise(
         "endDate": "2017-06-16T12:00",
         "roomType": "dlxoc",
       }
-    }), Math.random() * 100);
+    }), 100);
   }
 );
 
@@ -54,7 +54,7 @@ const fetchRooms = () => new Promise(
         description: "2 king beds",
         image: "http://www.hotelroomsearch.net/im/hotels/tr/room-room-hotel-6.jpg"
       }
-    ]), Math.random() * 100);
+    ]), 100);
   }
 )
 
