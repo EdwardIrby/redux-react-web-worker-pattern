@@ -1,24 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { dispatch, connect } from './state';
-const increment = () => { 
-  dispatch({ type: 'INCREMENT' })
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import SlideShow from './components/SlideShow';
+import { login } from './actions/auth';
+import { fetchRooms } from './actions/rooms';
+import { selectUserName, selectUserRoom } from './reducers';
+import logo from './logo.png';
+import './App.css';
+
+class App extends Component {
+  componentDidMount() {
+    const { login, fetchRooms } = this.props;
+    login();
+    fetchRooms();
+  }
+
+  render() {
+    const { isFetching, userName, accomodation } = this.props;
+    if (isFetching || isFetching === undefined) return <div className="loader" />;
+    return (
+      <div className="App">
+        <div className="main">
+          <img src={logo} width={250} alt="Redux Hotel" />
+          <h1>Your Reservation</h1>
+          <p>Name: {userName}</p>
+          <h2>Accomodation</h2>
+          <p><em>{accomodation.name}</em></p>
+          <p><img src={accomodation.image} width={300} alt="accomodation"/></p>
+        </div>
+        <SlideShow />
+      </div>
+    );
+  }
 }
-const decrement = () => {
-  dispatch({ type: 'DECREMENT' })
-}
-export const App = () => {
-  const [value, setValue] = useState();
-  useEffect(() => {
-    const disconnect = connect('UPDATE_COUNTER_VALUE', setValue)
-    return () => {
-      disconnect()
-    }
-  })
-  return(
-    <div style={{ display: 'grid' }}>
-      <button onClick={increment}>increment</button>
-      <button onClick={decrement}>decrement</button>
-      <h3>{value}</h3>
-    </div>
-  )
-}
+
+const mapStateToProps = (state) => {
+  const { auth, rooms } = state;
+  const isFetching = auth.isFetching || rooms.isFetching;
+  
+
+  return {
+    isFetching,
+    userName: selectUserName(state),
+    accomodation: selectUserRoom(state)
+  };
+};
+
+const mapDispatchToProps = { login, fetchRooms };
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
